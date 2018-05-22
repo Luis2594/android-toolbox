@@ -120,10 +120,10 @@ public class Toolbox {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setData(Uri.parse("tel:" + phone));
 
-            Intent chooserIntent = Intent.createChooser(intent, "Open With");
-            chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            Intent chooserIntent = Intent.createChooser(intent, "Open With");
+//            chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-            context.startActivity(chooserIntent);
+            context.startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
