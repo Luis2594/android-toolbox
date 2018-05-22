@@ -114,8 +114,16 @@ public class Toolbox {
      * @param phone   número de teléfono que desea realizar la llamada
      */
     public void callPhone(Context context, String phone) {
+
         try {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + phone)));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("tel:" + phone));
+
+            Intent chooserIntent = Intent.createChooser(intent, "Open With");
+            chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            context.startActivity(chooserIntent);
         } catch (Exception e) {
             e.printStackTrace();
         }
