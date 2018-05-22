@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Luis Castillo
  */
-public class Util {
+public class Toolbox {
 
     /**
      * Colorear el borde de un botón
