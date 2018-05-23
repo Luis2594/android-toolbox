@@ -3,6 +3,7 @@ package net.aplicativa.toolbox;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -41,79 +42,251 @@ import java.util.regex.Pattern;
  */
 public class Toolbox {
 
+
+//    OPEN APPS
+
     /**
-     * Colorear el borde de un botón
+     * Open localitation with all apps
      *
-     * @param b           botón
-     * @param bgColor     color del fondo para el botón
-     * @param borderColor color del borde para el botón
-     * @param radio       ancho de la linea del borde del botón
+     * @param context   activity context
+     * @param latitude  latitude
+     * @param longitude longitude
      */
-    public static void bordecolorboton(Button b, int bgColor, int borderColor, int radio) {
-        if (b != null) {
-            GradientDrawable gd = new GradientDrawable();
-            if (bgColor != 0) {
-                gd.setColor(bgColor);
-            }
-            gd.setCornerRadius(radio);
-            gd.setStroke(1, borderColor);
-            b.setBackground(gd);
+    public static void openGeolocalitation(Context context, String latitude, String longitude) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("geo:" + latitude + "," + longitude));
+
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     /**
-     * Asignar tipo de fuente a un label
+     * Open localitation with WAZE
      *
-     * @param context   context donde se encuentra el componente
-     * @param directory ruta donde se encuentra el archivo de la fuente
-     * @param txt       componete al que se desea cambiar la fuente
+     * @param context   activity context
+     * @param latitude  latitude
+     * @param longitude longitude
      */
-    public static void configureFonts(Context context, String directory, TextView txt) {
-        Typeface font = Typeface.createFromAsset(context.getAssets(), directory);
-        txt.setTypeface(font);
+    public static void openGeolocalitationWaze(Context context, String latitude, String longitude) {
+
+        if (existApp(context, "com.waze")) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse("waze://?ll=" + latitude + "," + longitude + "&navigate=yes"));
+
+                context.startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            openAppPlayStore(context, "com.waze");
+        }
     }
 
     /**
-     * Asignar tipo de fuente a un label con una actividad de tipo YouTubeBaseActivity
+     * Open profile or page in facebook
      *
-     * @param context   context donde se encuentra el componente
-     * @param directory ruta donde se encuentra el archivo de la fuente
-     * @param txt componete al que se desea cambiar la fuente
+     * @param context activity context
+     * @param id      id of profile or page
+     * @param profile true = profile, false = page
      */
-//    public   void configureFontsYoutube(YouTubeBaseActivity activity, String directory, TextView txt) {
-//        Typeface font = Typeface.createFromAsset(activity.getAssets(), directory);
-//        txt.setTypeface(font);
-//    }
-
-    /**
-     * Asignar tipo de fuente a un botón
-     *
-     * @param context   actividad donde se encuentra el componente
-     * @param directory ruta donde se encuentra el archivo de la fuente
-     * @param btn       componete al que se desea cambiar la fuente
-     */
-    public static void configureFontsButton(Context context, String directory, Button btn) {
-        Typeface font = Typeface.createFromAsset(context.getAssets(), directory);
-        btn.setTypeface(font);
+    public static void openFacebook(Context context, String id, boolean profile) {
+        openFacebook(context, id, profile, false);
     }
 
     /**
-     * Asignar tipo de fuente a un botón con una actividad de tipo YouTubeBaseActivity
+     * Open profile or page in facebook
      *
-     * @param activity actividad donde se encuentra el componente
-     * @param directory ruta donde se encuentra el archivo de la fuente
-     * @param btn componete al que se desea cambiar la fuente
+     * @param context       activity context
+     * @param id            id of profile or page
+     * @param profile       true = profile, false = page
+     * @param openInBrowser true = open in the browser, false = open in the play store
      */
-//    public   void configureFontsButtonYoutube(YouTubeBaseActivity activity, String directory, Button btn) {
-//        Typeface font = Typeface.createFromAsset(activity.getAssets(), directory);
-//        btn.setTypeface(font);
-//    }
+    public static void openFacebook(Context context, String id, boolean profile, boolean openInBrowser) {
+        if (existApp(context, "com.facebook.katana")) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                if (profile) {
+                    intent.setData(Uri.parse("fb://profile/" + id));
+                } else {
+                    intent.setData(Uri.parse("fb://page/" + id));
+                }
+                context.startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            if (openInBrowser) {
+                openPageBrowser(context, "https://www.facebook.com/profile.php?id=" + id);
+            } else {
+                openAppPlayStore(context, "com.facebook.katana");
+            }
+        }
+    }
 
     /**
-     * Realizar una llamada a un número teléfonico
+     * Open chat in Messenger
      *
-     * @param context actividad donde se encuentra el componente
-     * @param phone   número de teléfono que desea realizar la llamada
+     * @param context activity context
+     * @param id      id of profile or page
+     */
+    public static void openMessenger(Context context, String id) {
+
+        if (existApp(context, "com.facebook.orca")) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse("fb://messaging/" + id));
+
+                context.startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            openAppPlayStore(context, "com.facebook.orca");
+        }
+    }
+
+    /**
+     * Open profile or page in Twitter
+     *
+     * @param context activity context
+     * @param id      id of profile or page
+     */
+    public static void openTwitter(Context context, String id) {
+        openTwiter(context, id, false);
+    }
+
+    /**
+     * Open profile or page in Twitter
+     *
+     * @param context       activity context
+     * @param id            id of profile or page
+     * @param openInBrowser true = open in the browser, false = open in the play store
+     */
+    public static void openTwiter(Context context, String id, boolean openInBrowser) {
+
+        if (existApp(context, "com.twitter.android")) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse("twitter://user?user_id=" + id));
+
+                context.startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            if (openInBrowser) {
+                openPageBrowser(context, "https://twitter.com/" + id);
+            } else {
+                openAppPlayStore(context, "com.twitter.android");
+            }
+        }
+    }
+
+    /**
+     * Open profile or page in Instagram
+     *
+     * @param context activity context
+     * @param id      id of profile or page
+     */
+    public static void openInstagram(Context context, String id) {
+        openInstagram(context, id, false);
+    }
+
+    /**
+     * Open profile or page in Instagram
+     *
+     * @param context       activity context
+     * @param id            id of profile or page
+     * @param openInBrowser true = open in the browser, false = open in the play store
+     */
+    public static void openInstagram(Context context, String id, boolean openInBrowser) {
+        if (existApp(context, "com.instagram.android")) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse("http://instagram.com/_u/" + id));
+
+                context.startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            if (openInBrowser) {
+                openPageBrowser(context, "https://www.instagram.com/" + id);
+            } else {
+                openAppPlayStore(context, "com.instagram.android");
+            }
+        }
+    }
+
+    /**
+     * Open any page in the Browser
+     *
+     * @param context activity context
+     * @param url     Page's URL
+     */
+    public static void openPageBrowser(Context context, String url) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse(url));
+
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Check that package exist
+     *
+     * @param context     activity context
+     * @param packageName Page's URL
+     */
+    public static boolean existApp(Context context, String packageName) {
+
+        PackageManager pm = context.getPackageManager();
+        try {
+            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Open app in the Play Store
+     *
+     * @param context     activity context
+     * @param packageName Page's URL
+     */
+    public static void openAppPlayStore(Context context, String packageName) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("market://details?id=" + packageName));
+
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Make call
+     *
+     * @param context activity context
+     * @param phone   number to call
      */
     public static void callPhone(Context context, String phone) {
 
@@ -129,10 +302,10 @@ public class Toolbox {
     }
 
     /**
-     * Enviar correo electrónico
+     * Send email
      *
-     * @param context actividad donde se encuentra el componente
-     * @param email   correo electrónico al que desea enviar el correo
+     * @param context activity context
+     * @param email   email
      */
     public static void sendEmail(Context context, String email) {
         try {
@@ -146,204 +319,146 @@ public class Toolbox {
         }
     }
 
-    /**
-     * Abrir una determinada ubicación con todas las posibles aplicaciones de geolocalización
-     * que se encuentran en el dispositivo
-     *
-     * @param context   actividad donde se encuentra el componente
-     * @param latitude  latitud del lugar a encontrar
-     * @param longitude longitud del lugar a encontrar
-     */
-    public static void openGeolocalitation(Context context, String latitude, String longitude) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse("geo:" + latitude + "," + longitude));
 
-            context.startActivity(intent);
+//   CONFIGURE
+
+    /**
+     * Paint the edge of a button
+     *
+     * @param b           button
+     * @param bgColor     color for the background of button
+     * @param borderColor color for the edge of button
+     * @param oval        width for create the oval button
+     * @param widthEdge   width for the line edge of button
+     */
+    public static void setEdgeButton(Button b,
+                                     String bgColor,
+                                     String borderColor,
+                                     int oval,
+                                     int widthEdge) {
+
+        try {
+            if (b != null) {
+                GradientDrawable gd = new GradientDrawable();
+                gd.setColor(Color.parseColor(bgColor));
+                gd.setCornerRadius(oval);
+                gd.setStroke(widthEdge, Color.parseColor(borderColor));
+                b.setBackground(gd);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Abrir una determinada ubicación con la aplicación WAZE
+     * Set font to TextView
      *
-     * @param context   actividad donde se encuentra el componente
-     * @param latitude  latitud del lugar a encontrar
-     * @param longitude longitud del lugar a encontrar
+     * @param context   activity context
+     * @param directory Path of font
+     * @param txt       Component TextView
      */
-    public static void openGeolocalitationWaze(Context context, double latitude, double longitude) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse("waze://?ll=" + latitude + "," + longitude + "&navigate=yes"));
-
-            context.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void setFontsTextView(Context context, String directory, TextView txt) {
+        Typeface font = Typeface.createFromAsset(context.getAssets(), directory);
+        txt.setTypeface(font);
     }
 
     /**
-     * Abrir un perfil o página de Facebook,  desde la aplicación
-     * del dispositivo
+     * Set font to Button Text
      *
-     * @param context context donde se encuentra el componente
-     * @param id      id del perfil o página de Facebook
+     * @param context   activity context
+     * @param directory Path of font
+     * @param btn       Component Button
      */
-    public static void openFacebook(Context context, String id) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse("fb://page/" + id));
-
-            context.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void setFontsButton(Context context, String directory, Button btn) {
+        Typeface font = Typeface.createFromAsset(context.getAssets(), directory);
+        btn.setTypeface(font);
     }
 
     /**
-     * Abrir un perfil o página de Facebook, desde el navegador
-     * del dispositivo
+     * Clean string of special characters
      *
-     * @param context context donde se encuentra el componente
-     * @param url     URL del perfil o página de Facebook
+     * @param query your text
      */
-    public static void openFacebookBrowser(Context context, String url) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse(url));
-
-            context.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static String clearAscii(String query) {
+        String clean = null;
+        if (query != null) {
+            String value = query;
+            value = value.toUpperCase();
+            clean = Normalizer.normalize(value, Normalizer.Form.NFD);
+            clean = clean.replaceAll("[^\\p{ASCII}(N\u0303)(n\u0303)(\u00A1)(\u00BF)(\u00B0)(U\u0308)(u\u0308)]", "");
+            clean = Normalizer.normalize(clean, Normalizer.Form.NFC);
         }
+        return clean;
     }
 
     /**
-     * Abrir un chat de Messenger de un perfil o página de Facebook
-     *
-     * @param context actividad donde se encuentra el componente
-     * @param id      id del perfil o página de Facebook
+     * @param s your text
      */
-    public static void openMessenger(Context context, String id) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse("fb://messaging/" + id));
-
-            context.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static String capitalize(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        char first = s.charAt(0);
+        if (Character.isUpperCase(first)) {
+            return s;
+        } else {
+            return Character.toUpperCase(first) + s.substring(1);
         }
     }
 
+
     /**
-     * Abrir un perfil o página de Twitter, ya sea con la aplicación o desde el navegador
-     * del dispositivo
+     * Encode the url so that it is compatible with the browser
      *
-     * @param context actividad donde se encuentra el componente
-     * @param id      id del perfil o página de Twitter
+     * @param base_url   URL base
+     * @param complement complement the URL
      */
-    public static void openTwiter(Context context, String id) {
-
+    public static String encodeURL(String base_url, String complement) {
+        String nameEncode = "";
         try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse("twitter://user?user_id=" + id));
-
-            context.startActivity(intent);
-        } catch (Exception e) {
+            nameEncode = URLEncoder.encode(complement, "UTF-8");//changed
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
+        String URL = base_url + nameEncode;
+        URL = URL.replace("+", "%20");
+        return URL;
     }
 
+
     /**
-     * Abrir un perfil o página de Twitter, ya sea con la aplicación o desde el navegador
-     * del dispositivo
+     * Format at amount in any currency
+     * <p>
+     * For example: You have a string="1000"
+     * You call the method convertAmount and set the parameters ("1000", ' ', '.', "$ #,###")
+     * So the method return "$ 1 000
      *
-     * @param context actividad donde se encuentra el componente
-     * @param url     URL del perfil o página de Twitter
+     * @param amount            Amount at parse
+     * @param groupingSeparator Separator of numbers
+     * @param decimalSeparator  Separator decimal
+     * @param pattern           Conversion format
      */
-    public static void openTwiterBrowser(Context context, String url) {
+    public static String convertAmount(String amount,
+                                       char groupingSeparator,
+                                       char decimalSeparator,
+                                       String pattern) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setGroupingSeparator(groupingSeparator);
+        symbols.setDecimalSeparator(decimalSeparator);
 
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse(url));
-
-            context.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
+        double parsed = Double.parseDouble(amount);
+        String formatted = decimalFormat.format(parsed);
+        return formatted;
     }
 
-    /**
-     * Abrir un perfil o página de Instagram, ya sea con la aplicación o desde el navegador
-     * del dispositivo
-     *
-     * @param context actividad donde se encuentra el componente
-     * @param user    usuario del perfil o página de Instagram
-     */
-    public void openInstagram(Context context, String user) {
-        String scheme = "http://instagram.com/_u/" + user;
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse(scheme));
 
-            context.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//  VALIDATE
 
     /**
-     * Abrir un perfil o página de Instagram, ya sea con la aplicación o desde el navegador
-     * del dispositivo
-     *
-     * @param context actividad donde se encuentra el componente
-     * @param user    usuario del perfil o página de Instagram
-     */
-    public void openInstagramBrowser(Context context, String user) {
-        String url = "https://instagram.com/" + user;
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse(url));
-
-            context.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Abrir una página web desde el navegador del dispositivo
-     *
-     * @param context actividad donde se encuentra el componente
-     * @param url     URL de la página web
-     */
-    public static void openPageBrowser(Context context, String url) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setData(Uri.parse(url));
-
-            context.startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Verificar si el dispositivo tiene acceso a internet
-     * True si hay
-     * False no hay
+     * Check the connexion
+     * Return true = Is connection
+     * Return false = Isn't connection
      */
     public static boolean isConnected() {
         try {
@@ -361,60 +476,42 @@ public class Toolbox {
     }
 
     /**
-     * Descargar un archivo pdf
+     * Check given email with regular expression.
      *
-     * @param fileUrl   url del archivo
-     * @param directory directorio en el que se desea guardar el archivo
+     * @param email email for validation
+     * @return true valid email, otherwise false
      */
-    public static void downloadFile(String fileUrl, File directory) {
-        try {
+    public static boolean validateEmail(String email) {
 
-            URL url = new URL(fileUrl);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
-            urlConnection.connect();
+        // Compiles the given regular expression into a pattern.
+        Pattern pattern = Pattern.compile(PATTERN_EMAIL);
 
-            InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-            FileOutputStream fileOutputStream = new FileOutputStream(directory);
+        // Match the given input against this pattern
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
 
-            byte[] buffer = new byte[1024 * 1024];
-            int bufferLength = 0;
-            while ((bufferLength = inputStream.read(buffer)) > 0) {
-                fileOutputStream.write(buffer, 0, bufferLength);
-            }
-            fileOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    /**
-     * Limpiar la pila de fragmentos que existe en ejecución
-     *
-     * @param activity actividad donde se encuentra el componente
-     */
-    public static void clearAddToBackStack(AppCompatActivity activity) {
-        FragmentManager fm = activity.getSupportFragmentManager();
-        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
-            fm.popBackStack();
-        }
-    }
+
+//    DIALOGS
+
+
+    public static AlertDialog dialog;
 
     /**
      * This method show a custom alert
      *
-     * @param activity context
-     * @param title title of the alert
-     * @param content Content of the alert
-     * @param txtButton Text of the button
+     * @param activity   activity context
+     * @param title      title of the alert
+     * @param content    Content of the alert
+     * @param txtButton  Text of the button
+     * @param color1     Color primary
+     * @param color2     Color secundary
      * @param cancelable True = Dissmissable with a touch, False = No Dissmissable with a Touch
      */
-    public static AlertDialog dialog;
-
     public static void showAlertDialog(Activity activity,
                                        String title,
                                        String content,
@@ -460,17 +557,25 @@ public class Toolbox {
 
     public static AlertDialog dialogLoading;
 
+    /**
+     * This method show a custom alert
+     *
+     * @param activity         activity context
+     * @param msj              Content the message
+     * @param colorProgressBar Color progressBar
+     * @param colorText        Color TextView
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static void loadingDialog(Activity activity, String msj, String colorProgressBar, String colorText) {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View mView = inflater.inflate(R.layout.dialog_loading_confirm, null);
+        View mView = inflater.inflate(net.aplicativa.toolbox.R.layout.dialog_loading_confirm, null);
         mBuilder.setView(mView);
 
-        ProgressBar progressBar = mView.findViewById(R.id.progressBar);
+        ProgressBar progressBar = mView.findViewById(net.aplicativa.toolbox.R.id.progressBar);
         progressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.parseColor(colorProgressBar)));
 
-        TextView txtInfo = (TextView) mView.findViewById(R.id.txtInfo);
+        TextView txtInfo = (TextView) mView.findViewById(net.aplicativa.toolbox.R.id.txtInfo);
         txtInfo.setText(msj);
         txtInfo.setTextColor(Color.parseColor(colorText));
 
@@ -485,48 +590,55 @@ public class Toolbox {
     }
 
     /**
-     * Validate given email with regular expression.
+     * Download file pdf
      *
-     * @param email email for validation
-     * @return true valid email, otherwise false
+     * @param fileUrl   URL File
+     * @param directory Directory where to save the file
      */
-    public static boolean validateEmail(String email) {
-
-        String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
-        // Compiles the given regular expression into a pattern.
-        Pattern pattern = Pattern.compile(PATTERN_EMAIL);
-
-        // Match the given input against this pattern
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
-
-    }
-
-    public static String encodeURL(String base_url, String txt) {
-        String nameEncode = "";
+    public static void downloadFile(String fileUrl, File directory) {
         try {
-            nameEncode = URLEncoder.encode(txt, "UTF-8");//changed
-        } catch (UnsupportedEncodingException e) {
+
+            URL url = new URL(fileUrl);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+            urlConnection.connect();
+
+            InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+            FileOutputStream fileOutputStream = new FileOutputStream(directory);
+
+            byte[] buffer = new byte[1024 * 1024];
+            int bufferLength = 0;
+            while ((bufferLength = inputStream.read(buffer)) > 0) {
+                fileOutputStream.write(buffer, 0, bufferLength);
+            }
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        String URL = base_url + nameEncode;
-        URL = URL.replace("+", "%20");
-        return URL;
     }
 
-    public static String convertAmount(String amount, char groupingSeparator, char decimalSeparator, String pattern) {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setGroupingSeparator(groupingSeparator);
-        symbols.setDecimalSeparator(decimalSeparator);
-
-        DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
-        double parsed = Double.parseDouble(amount);
-        String formatted = decimalFormat.format(parsed);
-        return formatted;
+    /**
+     * Clean the stack of fragments that exists in execution
+     *
+     * @param activity activity context
+     */
+    public static void clearAddToBackStack(AppCompatActivity activity) {
+        FragmentManager fm = activity.getSupportFragmentManager();
+        for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
+            fm.popBackStack();
+        }
     }
 
+
+    //    NAME DEVICE
+
+    /**
+     * Return the name of device
+     */
     public static String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
@@ -537,30 +649,4 @@ public class Toolbox {
         }
     }
 
-    public static String capitalize(String s) {
-        if (s == null || s.length() == 0) {
-            return "";
-        }
-        char first = s.charAt(0);
-        if (Character.isUpperCase(first)) {
-            return s;
-        } else {
-            return Character.toUpperCase(first) + s.substring(1);
-        }
-    }
-
-    public static String clearAscii(String query) {
-        String clean = null;
-        if (query != null) {
-            String value = query;
-            value = value.toUpperCase();
-            // Normalizar texto para eliminar acentos, dieresis, cedillas y tildes
-            clean = Normalizer.normalize(value, Normalizer.Form.NFD);
-            // Quitar caracteres no ASCII excepto la enie, interrogacion que abre, exclamacion que abre, grados, U con dieresis.
-            clean = clean.replaceAll("[^\\p{ASCII}(N\u0303)(n\u0303)(\u00A1)(\u00BF)(\u00B0)(U\u0308)(u\u0308)]", "");
-            // Regresar a la forma compuesta, para poder comparar la enie con la tabla de valores
-            clean = Normalizer.normalize(clean, Normalizer.Form.NFC);
-        }
-        return clean;
-    }
 }
