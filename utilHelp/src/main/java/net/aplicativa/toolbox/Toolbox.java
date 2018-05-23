@@ -3,17 +3,20 @@ package net.aplicativa.toolbox;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.BufferedInputStream;
@@ -457,15 +460,19 @@ public class Toolbox {
 
     public static AlertDialog dialogLoading;
 
-    public static void loadingDialog(Activity activity, String msj, String color) {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public static void loadingDialog(Activity activity, String msj, String colorProgressBar, String colorText) {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View mView = inflater.inflate(R.layout.dialog_loading_confirm, null);
         mBuilder.setView(mView);
 
+        ProgressBar progressBar = mView.findViewById(R.id.progressBar);
+        progressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.parseColor(colorProgressBar)));
+
         TextView txtInfo = (TextView) mView.findViewById(R.id.txtInfo);
         txtInfo.setText(msj);
-        txtInfo.setTextColor(Color.parseColor(color));
+        txtInfo.setTextColor(Color.parseColor(colorText));
 
         dialogLoading = mBuilder.create();
         dialogLoading.setCancelable(false);
