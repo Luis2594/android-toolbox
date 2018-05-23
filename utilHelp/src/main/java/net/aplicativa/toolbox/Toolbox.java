@@ -411,7 +411,7 @@ public class Toolbox {
      */
     public static AlertDialog dialog;
 
-    public static AlertDialog showAlertDialog(Context context,
+    public static void showAlertDialog(Context context,
                                               String title,
                                               String content,
                                               String txtButton,
@@ -447,7 +447,7 @@ public class Toolbox {
             dialog.setCancelable(false);
             dialog.setCanceledOnTouchOutside(false);
         }
-        return dialog;
+        dialog.show();
     }
 
     public static void cancelShowAlertDialog() {
@@ -456,7 +456,7 @@ public class Toolbox {
 
     public static AlertDialog dialogLoading;
 
-    public static AlertDialog loadingDialog(Context context, String msj) {
+    public static void loadingDialog(Context context, String msj) {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View mView = inflater.inflate(R.layout.dialog_loading_confirm, null);
@@ -468,7 +468,7 @@ public class Toolbox {
         dialogLoading = mBuilder.create();
         dialogLoading.setCancelable(false);
         dialogLoading.setCanceledOnTouchOutside(false);
-        return dialogLoading;
+        dialogLoading.show();
     }
 
     public static void cancelLoadingDialog() {
