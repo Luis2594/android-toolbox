@@ -1,4 +1,4 @@
-package net.aplicativa.util2;
+package net.aplicativa.toolbox;
 
 import android.content.Context;
 import android.content.Intent;
@@ -32,8 +32,6 @@ import java.text.Normalizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//import com.google.android.youtube.player.YouTubeBaseActivity;
-
 /**
  * Created by Luis Castillo
  */
@@ -47,7 +45,7 @@ public class Toolbox {
      * @param borderColor color del borde para el botón
      * @param radio       ancho de la linea del borde del botón
      */
-    public void bordecolorboton(Button b, int bgColor, int borderColor, int radio) {
+    public static void bordecolorboton(Button b, int bgColor, int borderColor, int radio) {
         if (b != null) {
             GradientDrawable gd = new GradientDrawable();
             if (bgColor != 0) {
@@ -66,7 +64,7 @@ public class Toolbox {
      * @param directory ruta donde se encuentra el archivo de la fuente
      * @param txt       componete al que se desea cambiar la fuente
      */
-    public void configureFonts(Context context, String directory, TextView txt) {
+    public static void configureFonts(Context context, String directory, TextView txt) {
         Typeface font = Typeface.createFromAsset(context.getAssets(), directory);
         txt.setTypeface(font);
     }
@@ -90,7 +88,7 @@ public class Toolbox {
      * @param directory ruta donde se encuentra el archivo de la fuente
      * @param btn       componete al que se desea cambiar la fuente
      */
-    public void configureFontsButton(Context context, String directory, Button btn) {
+    public static void configureFontsButton(Context context, String directory, Button btn) {
         Typeface font = Typeface.createFromAsset(context.getAssets(), directory);
         btn.setTypeface(font);
     }
@@ -113,15 +111,12 @@ public class Toolbox {
      * @param context actividad donde se encuentra el componente
      * @param phone   número de teléfono que desea realizar la llamada
      */
-    public void callPhone(Context context, String phone) {
+    public static void callPhone(Context context, String phone) {
 
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setData(Uri.parse("tel:" + phone));
-
-//            Intent chooserIntent = Intent.createChooser(intent, "Open With");
-//            chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             context.startActivity(intent);
         } catch (Exception e) {
@@ -135,9 +130,13 @@ public class Toolbox {
      * @param context actividad donde se encuentra el componente
      * @param email   correo electrónico al que desea enviar el correo
      */
-    public void sendEmail(Context context, String email) {
+    public static void sendEmail(Context context, String email) {
         try {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + email)));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("mailto:" + email));
+
+            context.startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -151,9 +150,13 @@ public class Toolbox {
      * @param latitude  latitud del lugar a encontrar
      * @param longitude longitud del lugar a encontrar
      */
-    public void openGeolocalitation(Context context, String latitude, String longitude) {
+    public static void openGeolocalitation(Context context, String latitude, String longitude) {
         try {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("geo:" + latitude + "," + longitude)));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("geo:" + latitude + "," + longitude));
+
+            context.startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -166,28 +169,53 @@ public class Toolbox {
      * @param latitude  latitud del lugar a encontrar
      * @param longitude longitud del lugar a encontrar
      */
-    public boolean openGeolocalitationWaze(Context context, double latitude, double longitude) {
+    public static void openGeolocalitationWaze(Context context, double latitude, double longitude) {
         try {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("waze://?ll=" + latitude + "," + longitude + "&navigate=yes")));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("waze://?ll=" + latitude + "," + longitude + "&navigate=yes"));
+
+            context.startActivity(intent);
         } catch (Exception e) {
-            return false;
+            e.printStackTrace();
         }
-        return true;
     }
 
     /**
-     * Abrir un perfil o página de Facebook, ya sea con la aplicación o desde el navegador
+     * Abrir un perfil o página de Facebook,  desde la aplicación
+     * del dispositivo
+     *
+     * @param context context donde se encuentra el componente
+     * @param id      id del perfil o página de Facebook
+     */
+    public static void openFacebook(Context context, String id) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("fb://page/" + id));
+
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Abrir un perfil o página de Facebook, desde el navegador
      * del dispositivo
      *
      * @param context context donde se encuentra el componente
      * @param url     URL del perfil o página de Facebook
-     * @param id      id del perfil o página de Facebook
      */
-    public void openFacebook(Context context, String url, String id) {
+    public static void openFacebookBrowser(Context context, String url) {
         try {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("fb://page/" + id)));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse(url));
+
+            context.startActivity(intent);
         } catch (Exception e) {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            e.printStackTrace();
         }
     }
 
@@ -197,10 +225,15 @@ public class Toolbox {
      * @param context actividad donde se encuentra el componente
      * @param id      id del perfil o página de Facebook
      */
-    public void openMessenger(Context context, String id) {
+    public static void openMessenger(Context context, String id) {
         try {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("fb://messaging/" + id)));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("fb://messaging/" + id));
+
+            context.startActivity(intent);
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -209,22 +242,40 @@ public class Toolbox {
      * del dispositivo
      *
      * @param context actividad donde se encuentra el componente
-     * @param url     URL del perfil o página de Twitter
      * @param id      id del perfil o página de Twitter
      */
-    public void openTwiter(Context context, String url, String id) {
+    public static void openTwiter(Context context, String id) {
 
-        Intent intent = null;
         try {
-            // get the Twitter app if possible
-            context.getPackageManager().getPackageInfo("com.twitter.android", 0);
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("twitter://user?user_id=" + id));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("twitter://user?user_id=" + id));
+
+            context.startActivity(intent);
         } catch (Exception e) {
-            // no Twitter app, revert to browser
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            e.printStackTrace();
         }
-        context.startActivity(intent);
+
+    }
+
+    /**
+     * Abrir un perfil o página de Twitter, ya sea con la aplicación o desde el navegador
+     * del dispositivo
+     *
+     * @param context actividad donde se encuentra el componente
+     * @param url     URL del perfil o página de Twitter
+     */
+    public static void openTwiterBrowser(Context context, String url) {
+
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse(url));
+
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -235,15 +286,35 @@ public class Toolbox {
      * @param user    usuario del perfil o página de Instagram
      */
     public void openInstagram(Context context, String user) {
-
         String scheme = "http://instagram.com/_u/" + user;
-        String path = "https://instagram.com/" + user;
-        String nomPackageInfo = "com.instagram.android";
         try {
-            context.getPackageManager().getPackageInfo(nomPackageInfo, 0);
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(scheme)));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse(scheme));
+
+            context.startActivity(intent);
         } catch (Exception e) {
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(path)));
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Abrir un perfil o página de Instagram, ya sea con la aplicación o desde el navegador
+     * del dispositivo
+     *
+     * @param context actividad donde se encuentra el componente
+     * @param user    usuario del perfil o página de Instagram
+     */
+    public void openInstagramBrowser(Context context, String user) {
+        String url = "https://instagram.com/" + user;
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse(url));
+
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -253,8 +324,16 @@ public class Toolbox {
      * @param context actividad donde se encuentra el componente
      * @param url     URL de la página web
      */
-    public void openPageBrowser(Context context, String url) {
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    public static void openPageBrowser(Context context, String url) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse(url));
+
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -262,7 +341,7 @@ public class Toolbox {
      * True si hay
      * False no hay
      */
-    public boolean internet() {
+    public static boolean isConnected() {
         try {
             Process p = Runtime.getRuntime().exec("ping -c 1 www.google.es");
 
@@ -283,7 +362,7 @@ public class Toolbox {
      * @param fileUrl   url del archivo
      * @param directory directorio en el que se desea guardar el archivo
      */
-    public void downloadFile(String fileUrl, File directory) {
+    public static void downloadFile(String fileUrl, File directory) {
         try {
 
             URL url = new URL(fileUrl);
@@ -293,7 +372,6 @@ public class Toolbox {
 
             InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
             FileOutputStream fileOutputStream = new FileOutputStream(directory);
-            int totalSize = urlConnection.getContentLength();
 
             byte[] buffer = new byte[1024 * 1024];
             int bufferLength = 0;
@@ -315,38 +393,11 @@ public class Toolbox {
      *
      * @param activity actividad donde se encuentra el componente
      */
-    public void clearAddToBackStack(AppCompatActivity activity) {
+    public static void clearAddToBackStack(AppCompatActivity activity) {
         FragmentManager fm = activity.getSupportFragmentManager();
         for (int i = 0; i < fm.getBackStackEntryCount(); i++) {
             fm.popBackStack();
         }
-    }
-
-    /**
-     * Convertir una cadena en letras mayusculas y minusculas
-     * <p>
-     * Ejemplo:
-     * <p>
-     * cadena = ANDROID
-     * <p>
-     * Resultado que devuelve el método = Android
-     *
-     * @param cadena palabra que desea cambiar a mayúsculas y minúsculas
-     */
-    public String ucFirst(String cadena) {
-        char[] caracteres = cadena.toCharArray();
-
-        for (int i = 0; i < cadena.length() - 1; i++)
-            // Es 'palabra'
-            if (caracteres[i] == ' ' || caracteres[i] == '.' || caracteres[i] == ',')
-                // Reemplazamos
-                caracteres[i + 1] = Character.toUpperCase(caracteres[i + 1]);
-            else
-                caracteres[i + 1] = Character.toLowerCase(caracteres[i + 1]);
-
-        String x = new String(caracteres);
-        x.toString();
-        return new String(caracteres);
     }
 
     /**
@@ -358,14 +409,15 @@ public class Toolbox {
      * @param txtButton Text of the button
      * @param cancelable True = Dissmissable with a touch, False = No Dissmissable with a Touch
      */
-    public AlertDialog dialog;
-    public AlertDialog showAlertDialog(Context context,
-                                String title,
-                                String content,
-                                String txtButton,
-                                String color1,
-                                String color2,
-                                boolean cancelable) {
+    public static AlertDialog dialog;
+
+    public static AlertDialog showAlertDialog(Context context,
+                                              String title,
+                                              String content,
+                                              String txtButton,
+                                              String color1,
+                                              String color2,
+                                              boolean cancelable) {
 
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -398,12 +450,13 @@ public class Toolbox {
         return dialog;
     }
 
-    public void cancelShowAlertDialog(){
+    public static void cancelShowAlertDialog() {
         dialog.dismiss();
     }
 
-    public AlertDialog dialogLoading;
-    public AlertDialog loadingDialog(Context context, String msj) {
+    public static AlertDialog dialogLoading;
+
+    public static AlertDialog loadingDialog(Context context, String msj) {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View mView = inflater.inflate(R.layout.dialog_loading_confirm, null);
@@ -418,15 +471,9 @@ public class Toolbox {
         return dialogLoading;
     }
 
-    public void cancelLoadingDialog(){
+    public static void cancelLoadingDialog() {
         dialog.dismiss();
     }
-
-    /**
-     * Variable que verifica el formato del correo
-     */
-    public final String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
     /**
      * Validate given email with regular expression.
@@ -434,7 +481,10 @@ public class Toolbox {
      * @param email email for validation
      * @return true valid email, otherwise false
      */
-    public boolean validateEmail(String email) {
+    public static boolean validateEmail(String email) {
+
+        String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
         // Compiles the given regular expression into a pattern.
         Pattern pattern = Pattern.compile(PATTERN_EMAIL);
@@ -445,7 +495,7 @@ public class Toolbox {
 
     }
 
-    public String encodeURL(String base_url, String txt) {
+    public static String encodeURL(String base_url, String txt) {
         String nameEncode = "";
         try {
             nameEncode = URLEncoder.encode(txt, "UTF-8");//changed
@@ -457,18 +507,18 @@ public class Toolbox {
         return URL;
     }
 
-    public String convertAmount(String amount) {
+    public static String convertAmount(String amount, char groupingSeparator, char decimalSeparator, String pattern) {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setGroupingSeparator(',');
-        symbols.setDecimalSeparator('.');
+        symbols.setGroupingSeparator(groupingSeparator);
+        symbols.setDecimalSeparator(decimalSeparator);
 
-        DecimalFormat decimalFormat = new DecimalFormat("₡ #,###", symbols);
+        DecimalFormat decimalFormat = new DecimalFormat(pattern, symbols);
         double parsed = Double.parseDouble(amount);
         String formatted = decimalFormat.format(parsed);
         return formatted;
     }
 
-    public String getDeviceName() {
+    public static String getDeviceName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
         if (model.startsWith(manufacturer)) {
@@ -478,7 +528,7 @@ public class Toolbox {
         }
     }
 
-    private String capitalize(String s) {
+    public static String capitalize(String s) {
         if (s == null || s.length() == 0) {
             return "";
         }
@@ -490,7 +540,7 @@ public class Toolbox {
         }
     }
 
-    public String clearAscii(String query) {
+    public static String clearAscii(String query) {
         String clean = null;
         if (query != null) {
             String value = query;

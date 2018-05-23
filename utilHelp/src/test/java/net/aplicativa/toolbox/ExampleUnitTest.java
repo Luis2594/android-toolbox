@@ -1,4 +1,4 @@
-package net.aplicativa.util2;
+package net.aplicativa.toolbox;
 
 import org.junit.Test;
 
