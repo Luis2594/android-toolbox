@@ -24,7 +24,7 @@ Add it in your root build.gradle at the end of repositories:
 ```
 
 dependencies {
-	  implementation 'com.github.Luis2594:android-toolbox:prueba'
+	  implementation 'com.github.Luis2594:android-toolbox:v0.0.1'
 }
 
 ```
