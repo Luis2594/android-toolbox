@@ -1,5 +1,6 @@
 package net.aplicativa.toolbox;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -411,28 +412,28 @@ public class Toolbox {
      */
     public static AlertDialog dialog;
 
-    public static void showAlertDialog(Context context,
-                                              String title,
-                                              String content,
-                                              String txtButton,
-                                              String color1,
-                                              String color2,
-                                              boolean cancelable) {
+    public static void showAlertDialog(Activity activity,
+                                       String title,
+                                       String content,
+                                       String txtButton,
+                                       String color1,
+                                       String color2,
+                                       boolean cancelable) {
 
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(context);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View mView = inflater.inflate(R.layout.generic_dialog, null);
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View mView = inflater.inflate(net.aplicativa.toolbox.R.layout.generic_dialog, null);
         mBuilder.setView(mView);
 
-        TextView txtTitle = mView.findViewById(R.id.txtTitle);
-        txtTitle.setBackgroundColor(Color.parseColor(color1));
+        TextView txtTitle = mView.findViewById(net.aplicativa.toolbox.R.id.txtTitle);
+        txtTitle.setTextColor(Color.parseColor(color1));
         txtTitle.setText(title);
 
-        TextView txtContent = mView.findViewById(R.id.txtContent);
-        txtContent.setBackgroundColor(Color.parseColor(color2));
+        TextView txtContent = mView.findViewById(net.aplicativa.toolbox.R.id.txtContent);
+        txtContent.setTextColor(Color.parseColor(color2));
         txtContent.setText(content);
 
-        Button btnCancel = mView.findViewById(R.id.btnCancel);
+        Button btnCancel = mView.findViewById(net.aplicativa.toolbox.R.id.btnCancel);
         btnCancel.setText(txtButton);
         btnCancel.setBackgroundColor(Color.parseColor(color1));
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -456,14 +457,15 @@ public class Toolbox {
 
     public static AlertDialog dialogLoading;
 
-    public static void loadingDialog(Context context, String msj) {
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(context);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public static void loadingDialog(Activity activity, String msj, String color) {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View mView = inflater.inflate(R.layout.dialog_loading_confirm, null);
         mBuilder.setView(mView);
 
         TextView txtInfo = (TextView) mView.findViewById(R.id.txtInfo);
         txtInfo.setText(msj);
+        txtInfo.setTextColor(Color.parseColor(color));
 
         dialogLoading = mBuilder.create();
         dialogLoading.setCancelable(false);
