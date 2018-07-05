@@ -37,6 +37,8 @@ import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.Normalizer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -653,19 +655,15 @@ public class Toolbox {
     }
 
 
-    //    JSON
-    public static JSONObject makeJSONObject(String[] paramers, String[] values) {
+    //JSON
+    public static Map<String, String> makeJSONObject(String[] paramers, String[] values) {
         if (paramers.length != values.length) {
             return null;
         }
-        JSONObject json = new JSONObject();
+
+        Map<String, String> json = new HashMap<>();
         for (int i = 0; i < paramers.length; i++) {
-            try {
-                json.put(paramers[i], values[i]);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
-            }
+            json.put(paramers[i], values[i]);
         }
         return json;
     }
