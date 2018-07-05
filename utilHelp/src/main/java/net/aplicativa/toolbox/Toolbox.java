@@ -20,6 +20,9 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -649,4 +652,21 @@ public class Toolbox {
         }
     }
 
+
+    //    JSON
+    public static JSONObject makeJSONObject(String[] paramers, String[] values) {
+        if (paramers.length != values.length) {
+            return null;
+        }
+        JSONObject json = new JSONObject();
+        for (int i = 0; i < paramers.length; i++) {
+            try {
+                json.put(paramers[i], values[i]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return json;
+    }
 }
