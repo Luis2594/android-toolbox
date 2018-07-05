@@ -586,7 +586,7 @@ public class Toolbox {
     }
 
     public static void cancelLoadingDialog() {
-        dialog.dismiss();
+        dialogLoading.dismiss();
     }
 
     /**
