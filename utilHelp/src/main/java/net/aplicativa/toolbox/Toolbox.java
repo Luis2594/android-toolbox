@@ -513,16 +513,16 @@ public class Toolbox {
      * @param title      title of the alert
      * @param content    Content of the alert
      * @param txtButton  Text of the button
-     * @param color1     Color primary
-     * @param color2     Color secundary
+     * @param bgTitleAndButton     Color primary
+     * @param bgContent     Color secundary
      * @param cancelable True = Dissmissable with a touch, False = No Dissmissable with a Touch
      */
     public static void showAlertDialog(Activity activity,
                                        String title,
                                        String content,
                                        String txtButton,
-                                       String color1,
-                                       String color2,
+                                       String bgTitleAndButton,
+                                       String bgContent,
                                        boolean cancelable) {
 
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(activity);
@@ -531,16 +531,16 @@ public class Toolbox {
         mBuilder.setView(mView);
 
         TextView txtTitle = mView.findViewById(net.aplicativa.toolbox.R.id.txtTitle);
-        txtTitle.setTextColor(Color.parseColor(color1));
+        txtTitle.setTextColor(Color.parseColor(bgTitleAndButton));
         txtTitle.setText(title);
 
         TextView txtContent = mView.findViewById(net.aplicativa.toolbox.R.id.txtContent);
-        txtContent.setTextColor(Color.parseColor(color2));
+        txtContent.setTextColor(Color.parseColor(bgContent));
         txtContent.setText(content);
 
         Button btnCancel = mView.findViewById(net.aplicativa.toolbox.R.id.btnCancel);
         btnCancel.setText(txtButton);
-        btnCancel.setBackgroundColor(Color.parseColor(color1));
+        btnCancel.setBackgroundColor(Color.parseColor(bgTitleAndButton));
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
